@@ -24,4 +24,4 @@ disliked varchar default '0',
 added  Date default CURRENT_DATE);
 
 insert into users(name,email,role,password) 
-values('ankur','ankur@gmail.com','chief editor','123456');
+values('admin','admin@gmail.com','chief editor','123456');

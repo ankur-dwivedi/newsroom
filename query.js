@@ -1,13 +1,23 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-  user: 'me',
-  host: 'localhost',
-  database: 'newsroom',
-  password: 'password',
-  port: 5432,
-})
+// const Pool = require('pg').Pool
+const { Client } = require('pg');
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+client.connect();
+// const pool = new Pool({
+//   user: 'me',
+//   host: 'localhost',
+//   database: 'newsroom',
+//   password: 'password',
+//   port: 5432,
+// })
 const getUsers = (request, response) => {
-  pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
+  client.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
     if (error) {
       throw error
     }
@@ -17,7 +27,7 @@ const getUsers = (request, response) => {
 
 const login = (request, response) => {
   const { email,password } = request.body
-  pool.query('SELECT * FROM users WHERE email = $1 and password=$2', [email,password], (error, results) => {
+  client.query('SELECT * FROM users WHERE email = $1 and password=$2', [email,password], (error, results) => {
     if (error) {
       throw error
     }
@@ -27,11 +37,11 @@ const login = (request, response) => {
     else
     {
       let token=Math.random().toString(36).substr(2);
-      pool.query('update users set token=$1 where email=$2', [token, email], (error, results) => {
+      client.query('update users set token=$1 where email=$2', [token, email], (error, results) => {
         if (error) {
           throw error
         }
-        pool.query('SELECT * FROM users WHERE email = $1 and password=$2', [email,password], (error, results) => {
+        client.query('SELECT * FROM users WHERE email = $1 and password=$2', [email,password], (error, results) => {
           if (error) {
             throw error
           }
@@ -45,7 +55,7 @@ const login = (request, response) => {
 const getUserByToken = (request, response) => {
   const { token } = request.body
 
-  pool.query('SELECT * FROM users WHERE token = $1', [token], (error, results) => {
+  client.query('SELECT * FROM users WHERE token = $1', [token], (error, results) => {
     if (error) {
       throw error
     }
@@ -56,7 +66,7 @@ const getUserByToken = (request, response) => {
 const createUser = (request, response) => {
   const { name, email,role,specialization,password,birthday,gender,image } = request.body
 
-  pool.query('SELECT name FROM users WHERE email= $1', [email], (error, results) => {
+  client.query('SELECT name FROM users WHERE email= $1', [email], (error, results) => {
     if (error) {
       console.log(error)
     }
@@ -64,7 +74,7 @@ const createUser = (request, response) => {
     response.status(200).json({"status" : "email allready registered"})
     else
     {
-      pool.query('INSERT INTO users (name,email,role,specialization,password,birthday,gender,image)  VALUES ($1, $2,$3,$4,$5,$6,$7,$8)', [name, email,role,specialization,password,birthday,gender,image], (error, results) => {
+      client.query('INSERT INTO users (name,email,role,specialization,password,birthday,gender,image)  VALUES ($1, $2,$3,$4,$5,$6,$7,$8)', [name, email,role,specialization,password,birthday,gender,image], (error, results) => {
         if (error) {
           throw error
         }
@@ -77,7 +87,7 @@ const createUser = (request, response) => {
 }
 
 const getStory = (request, response) => {
-  pool.query('SELECT * FROM story ORDER BY id ASC', (error, results) => {
+  client.query('SELECT * FROM story ORDER BY id ASC', (error, results) => {
     if (error) {
       throw error
     }
@@ -88,7 +98,7 @@ const getStory = (request, response) => {
 const getStoryById = (request, response) => {
   const { id} = request.body
 
-  pool.query('SELECT * FROM story WHERE id = $1', [id], (error, results) => {
+  client.query('SELECT * FROM story WHERE id = $1', [id], (error, results) => {
     if (error) {
       throw error
     }
@@ -99,7 +109,7 @@ const getStoryById = (request, response) => {
 const createStory = (request, response) => {
   const { title, writer,status,description,image,topic} = request.body
 
-  pool.query('INSERT INTO story (title, writer,status,description,image,topic)  VALUES ($1, $2,$3,$4,$5,$6)', [ title, writer,status,description,image,topic], (error, results) => {
+  client.query('INSERT INTO story (title, writer,status,description,image,topic)  VALUES ($1, $2,$3,$4,$5,$6)', [ title, writer,status,description,image,topic], (error, results) => {
     if (error) {
       throw error
     }
@@ -111,7 +121,7 @@ const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
   const { name, email } = request.body
 
-  pool.query(
+  client.query(
     'UPDATE users SET name = $1, email = $2 WHERE id = $3',
     [name, email, id],
     (error, results) => {
@@ -127,7 +137,7 @@ const deleteStory = (request, response) => {
   const { id } = request.body
 
 
-  pool.query('DELETE FROM story WHERE id = $1', [id], (error, results) => {
+  client.query('DELETE FROM story WHERE id = $1', [id], (error, results) => {
     if (error) {
       throw error
     }
