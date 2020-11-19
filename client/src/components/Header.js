@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function Header() {
+export default function Header(props) {
   const classes = useStyles();
   let history = useHistory();
   const [auth, setAuth] = React.useState(true);
@@ -118,7 +118,7 @@ export default function Header() {
                 >
                   <MenuItem onClick={handleClose}>{name}</MenuItem>
                   {role!=="public"?<MenuItem onClick={handleClose}>{role}</MenuItem>:""}
-                  <MenuItem onClick={() => { handleClose(); localStorage.clear(); setAuth(false) }}>Logout</MenuItem>
+                  <MenuItem onClick={() => { handleClose(); localStorage.clear(); props.changeAuth() }}>Logout</MenuItem>
                 </Menu>
               </div>
             )}

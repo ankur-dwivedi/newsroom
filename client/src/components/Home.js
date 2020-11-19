@@ -100,10 +100,13 @@ export default function Home() {
         console.log(error);
       })
   }
+  const changeAuth=()=>{
+    setAuth(setAuth(false))
+  }
 
   return (
     <React.Fragment>
-      <Header/>
+      <Header changeAuth={changeAuth}/>
       <main>
         {/* Hero unit */}
         <div className={classes.heroContent}>

@@ -1,4 +1,11 @@
 // const Pool = require('pg').Pool
+// const pool = new Pool({
+//   user: 'me',
+//   host: 'localhost',
+//   database: 'newsroom',
+//   password: 'password',
+//   port: 5432,
+// })
 const { Client } = require('pg');
 
 const client = new Client({
@@ -9,13 +16,7 @@ const client = new Client({
 });
 
 client.connect();
-// const pool = new Pool({
-//   user: 'me',
-//   host: 'localhost',
-//   database: 'newsroom',
-//   password: 'password',
-//   port: 5432,
-// })
+
 const getUsers = (request, response) => {
   client.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
     if (error) {
