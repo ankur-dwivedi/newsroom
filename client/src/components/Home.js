@@ -89,6 +89,7 @@ export default function Home() {
     setAnchorEl(null);
   };
   useEffect(() => {
+    setDisplay("none")
     load()
     loadStaff()
     if(localStorage.getItem("token"))

@@ -66,11 +66,19 @@ export default function Header(props) {
         token: localStorage.getItem("token")
       })
         .then(function (response) {
-          setImage(response.data[0].image)
-          setEmail(response.data[0].email)
-          setName(response.data[0].name)
-          setRole(response.data[0].role)
           console.log(response)
+          if(response.data.length>0){
+            setImage(response.data[0].image)
+            setEmail(response.data[0].email)
+            setName(response.data[0].name)
+            setRole(response.data[0].role)
+          }
+          else{
+            localStorage.clear();
+            history.push("/")
+          }
+         
+          
         })
         .catch(function (error) {
           console.log(error);
