@@ -188,11 +188,13 @@ export default function Home() {
             :""}
           </Container>
         </div>
-        <Container className={classes.cardGrid} maxWidth="md" style={{display:display}}>
+        <Container className={classes.cardGrid} maxWidth="lg" style={{display:display}}>
         <Typography variant="h5" align="center" color="textSecondary" paragraph>
               Staff
             </Typography>
-          <Grid container spacing={4}>
+            
+          <Grid container spacing={4} justify="center">
+          
           {user.map((data) => (
               role==="chief editor" && data.role!=="public"?<div>
               <Avatar alt="Remy Sharp" className={classes.avatar} src={"./uploads/" +data.image} />
@@ -200,8 +202,11 @@ export default function Home() {
               </div>
               :""
             ))}
+            
           </Grid>
-        </Container>
+          
+          </Container>
+        
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
             <Grid container spacing={4}>
