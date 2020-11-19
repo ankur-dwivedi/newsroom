@@ -9,6 +9,9 @@ import Link from '@material-ui/core/Link';
 import { useHistory } from 'react-router-dom';
 import CardView from "./CardView"
 import Header from "./Header"
+import Avatar from '@material-ui/core/Avatar';
+
+import { RemoveShoppingCart } from '@material-ui/icons';
 
 const axios = require('axios').default;
 
@@ -50,6 +53,17 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
+  avatar: {
+    margin: theme.spacing(2),
+    height: 120,
+    width: 120,
+    backgroundColor: theme.palette.secondary.main,
+  },
+  avatar2: {
+    margin: theme.spacing(2),
+    width: 120,
+    fontWeight:500
+  }
 }));
 
 
@@ -57,6 +71,7 @@ export default function Home() {
   const classes = useStyles();
   let history = useHistory();
   const [data, setData] = useState([])
+  const [user, setUser] = useState([])
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -64,6 +79,7 @@ export default function Home() {
   const [role, setRole] = useState("");
   const [email,setEmail]=useState("");
   const [name,setName]=useState("");
+  const [display,setDisplay]=useState("none");
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -74,6 +90,7 @@ export default function Home() {
   };
   useEffect(() => {
     load()
+    loadStaff()
     if(localStorage.getItem("token"))
     {
       axios.post("/userToken", {
@@ -89,9 +106,10 @@ export default function Home() {
           console.log(error);
         })
     }
-  }, [])
+  }, [auth])
 
   const load = () => {
+    setData([])
     axios.get(" /story")
       .then(function (response) {
         setData(response.data)
@@ -100,7 +118,24 @@ export default function Home() {
         console.log(error);
       })
   }
+
+  const loadStaff = () => {
+    axios.get("/users")
+      .then(function (response) {
+        setUser(response.data)
+        console.log(response.data)
+        })
+      .catch(function (error) {
+        console.log(error);
+      })
+  }
+
   const changeAuth=()=>{
+    load()
+    setImage("")
+          setEmail("")
+          setName("")
+          setRole("")
     setAuth(setAuth(false))
   }
 
@@ -126,6 +161,9 @@ export default function Home() {
                   <Button variant="contained" color="primary" onClick={() => history.push("/add")}>
                     Add new roles
                   </Button>
+                  <Button variant="contained" color="primary" onClick={() => {display==="none"?setDisplay(""):setDisplay("none")}} style={{marginLeft:"1rem"}}>
+                    Staff
+                  </Button>
                 </Grid>
               </Grid>
             </div>
@@ -150,12 +188,30 @@ export default function Home() {
             :""}
           </Container>
         </div>
-        
+        <Container className={classes.cardGrid} maxWidth="md" style={{display:display}}>
+        <Typography variant="h5" align="center" color="textSecondary" paragraph>
+              Staff
+            </Typography>
+          <Grid container spacing={4}>
+          {user.map((data) => (
+              role==="chief editor" && data.role!=="public"?<div>
+              <Avatar alt="Remy Sharp" className={classes.avatar} src={"./uploads/" +data.image} />
+              <p style={{display:"inline-block",textAlign:"center",fontSize:"0.85rem"}} className={classes.avatar2}>{data.role+"\n"+data.email}</p>
+              </div>
+              :""
+            ))}
+          </Grid>
+        </Container>
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
-          <Grid container spacing={4}>
+            <Grid container spacing={4}>
             {data.map((data) => (
-              < CardView data={data} key={data._id} load={load} />
+              ((role==="public"||!localStorage.getItem("token")) && data.status==="published")||
+              (role==="Writer"&&email===data.writer)||(role==="chief editor")||
+              (role==="Editors" && data.status.indexOf(email)!==-1)||
+              (role==="Legal Department" && data.status==="legal")?
+              < CardView data={data} key={data.id} load={load} />
+              :""
             ))}
           </Grid>
         </Container>

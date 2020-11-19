@@ -127,7 +127,7 @@ export default function Header(props) {
         :
         <AppBar position="static" style={{backgroundColor:"#e6e6ff"}}>
           <Toolbar>
-            <Typography variant="h6" className={classes.title} style={{color:"#000"}}>
+            <Typography variant="h6" className={classes.title} style={{color:"#000"}} onClick={()=>history.push("/")}>
               NewsRoom
           </Typography>
             <Button color="black" onClick={() => history.push("/login")}>Login</Button>

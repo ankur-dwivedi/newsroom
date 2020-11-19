@@ -6,6 +6,7 @@
 //   password: 'password',
 //   port: 5432,
 // })
+require('dotenv').config()
 const { Client } = require('pg');
 
 const client = new Client({
@@ -83,8 +84,17 @@ const createUser = (request, response) => {
       })
     }
   })
+}
 
-  
+const getEdiors = (request, response) => {
+  const { topic } = request.body
+
+  client.query('SELECT * FROM users WHERE specialization = $1 and role=$2', [topic,'Editors'], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
 }
 
 const getStory = (request, response) => {
@@ -118,13 +128,23 @@ const createStory = (request, response) => {
   })
 }
 
-const updateUser = (request, response) => {
-  const id = parseInt(request.params.id)
-  const { name, email } = request.body
+const updateStoryStatus = (request, response) => {
+  const {status,id} = request.body
+
+  client.query('UPDATE  story SET STATUS = $1 where id=$2', [status,id], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const updateStory = (request, response) => {
+  const { description, title,id,topic } = request.body
 
   client.query(
-    'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-    [name, email, id],
+    'UPDATE story SET description= $1, title = $2 , topic = $3 WHERE id = $4',
+    [description, title, topic,id],
     (error, results) => {
       if (error) {
         throw error
@@ -151,9 +171,11 @@ module.exports = {
   login,
   createUser,
   getUserByToken,
+  getEdiors,
   getStory,
   getStoryById,
   createStory,
-  updateUser,
+  updateStoryStatus,
+  updateStory,
   deleteStory,
 }

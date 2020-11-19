@@ -26,10 +26,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/login', db.login)
 app.post('/users', db.createUser)
 app.post('/userToken', db.getUserByToken)
+app.post('/editor', db.getEdiors)
 app.get('/story', db.getStory)
 app.post('/storyId', db.getStoryById)
 app.post('/story', db.createStory)
-app.put('/users/:id', db.updateUser)
+app.post('/updateStoryStatus', db.updateStoryStatus)
+app.post('/updateStory', db.updateStory)
 app.post('/delete', db.deleteStory)
  
 
