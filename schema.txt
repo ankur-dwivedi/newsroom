@@ -1,0 +1,27 @@
+create table users(
+id serial primary key,
+name varchar(51),
+email varchar,
+role varchar(25),
+specialization varchar(25),
+password varchar(25),
+birthday varchar(25),
+gender varchar(25),
+image varchar,
+token varchar);
+
+create table story(
+id serial primary key,
+title varchar(50),
+writer varchar(25),
+status varchar(25),
+description text,
+comment varchar,
+image varchar,
+topic varchar,
+liked varchar default '0',
+disliked varchar default '0',
+added  Date default CURRENT_DATE);
+
+insert into users(name,email,role,password) 
+values('ankur','ankur@gmail.com','chief editor','123456');
